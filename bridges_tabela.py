@@ -2,7 +2,7 @@ import urllib.request
 
 from bs4 import BeautifulSoup
 
-response = urllib.request.urlopen('https://en.wikipedia.org/wiki/'+'List_of_bridges_on_the_National_Register_of_Historic_Places_in_Alabama')
+response = urllib.request.urlopen('https://en.wikipedia.org/wiki/List_of_bridges_in_Perth,_Western_Australia')
 
 soup = BeautifulSoup(response.read())
 
@@ -14,13 +14,15 @@ for table in tables:
     nome=-1
     location=-1
     j=0
+    loc_found = False
     for header in headers:
         if header.text == "Name":
             nome=j
-            print(nome)
-        if header.text =="Location":
+        if header.text =="Coordinates":
             location=j
-            print(location)
+            loc_found = True
+        if header.text =="Location" and loc_found == False:
+            location=j
         j+=1
     if nome != -1 and location != -1:
         lines = table.find_all('tr')
