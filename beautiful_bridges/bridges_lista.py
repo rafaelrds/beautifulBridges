@@ -1,7 +1,6 @@
-__author__ = 'tendiniz'
+# -*- coding: utf-8 -*-
 
 import urllib.request
-
 from bs4 import BeautifulSoup
 
 response = urllib.request.urlopen('https://en.wikipedia.org/wiki/List_of_bridges')
@@ -11,9 +10,9 @@ soup = BeautifulSoup(response.read())
 resposta = []
 
 textos = soup.find_all('h2')
-for texto in textos:
-    if "See also" in texto.text:
-        while texto.next_siblings.next:
+# for texto in textos:
+#     if "See also" in texto.text:
+#         while texto.next_siblings.next:
 
 
 
