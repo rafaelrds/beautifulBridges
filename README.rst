@@ -18,6 +18,7 @@ Setup
 -----
 
 ::
+
     git clone https://github.com/rafaelrds/beautifulBridges
     cd beautiful_bridges
     pip install -r requirements.txt
@@ -26,6 +27,7 @@ Usage
 ---------
 
 ::
+
     python bridge_lista.py
 
 
