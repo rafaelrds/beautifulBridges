@@ -3,16 +3,16 @@ BeautifulBridges
 
 Intro
 -----
-  A simple html-mining that looks for coordinates
-- This was initially designed to be a html walker
-  that mines bridge names and its correspondent
-  coordinate
+  A simple html-miner that looks for coordinates.
+  This was initially designed to be a html walker
+  that mines bridges names and it correspondent
+  coordinate.
 
 Licensing
 ---------
   Right now, beautiful bridges uses a WTFPL license
   that means you can copy and distribute the product.
-  You will find more information at the LICENSE file.
+  You will find more information at LICENSE file.
 
 Setup
 -----

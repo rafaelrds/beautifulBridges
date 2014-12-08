@@ -1,7 +1,5 @@
-__author__ = 'tendiniz'
-
+# -*- coding: utf-8 -*-
 import urllib.request
-
 from bs4 import BeautifulSoup
 
 # Extrai o nome e a coordenada da ponte no caso que a informação está contida em uma tabela.
@@ -54,53 +52,88 @@ def verificaTabela(soup):
     return False
 
 # Encontra as listas na URL que não fazem parte do LI
-def findLists(url,resposta):
+def findLists(url,resposta,visited):
     response = urllib.request.urlopen(url)
     soup = BeautifulSoup(response.read())
 
     links = soup.find_all('a')
     for link in links:
         if link.get('href') is not None and "List of " in link.text and link.parent.name != "li":
-            findElements('https://en.wikipedia.org'+link['href'],resposta)
+            recuperaPontes('https://en.wikipedia.org'+link['href'],resposta,visited)
 
 # Verifica se o tipo da pagina é tabela ou não, se não for tabela ela adquire a informação dos LI. Caso no LI seja uma Lista de Bridges ele chama recursivamente a função
-def findElements(url,resposta):
-    response = urllib.request.urlopen(url)
-    soup = BeautifulSoup(response.read())
+def findElements(url,resposta,visited):
+    visited.append(url)
 
-    if verificaTabela(soup)==True:
-        extractTabela(soup,resposta)
+    try:
+        response = urllib.request.urlopen(url)
+    except:
+        print("pagina nao encontrada")
     else:
-        linhas = soup.find_all('li')
-        for linha in linhas:
-            links = linha.find_all('a')
-            if links and links[0].get('href') is not None and links[0].get('title') is not None and links[0].get('href')[0:6]=="/wiki/":
-                a=links[0]
-                if "List of bridges" in a['title']:
-                    findElements('https://en.wikipedia.org'+a['href'],resposta)
-                else:
-                    temp=[]
-                    temp.append(a['title'])
-                    temp.append(getCoordinates('https://en.wikipedia.org'+a['href']))
-                    resposta.append(temp)
-                    print(temp)
+        soup = BeautifulSoup(response.read())
+
+        findLists(url,resposta,visited)
+
+        if verificaTabela(soup)==True:
+            extractTabela(soup,resposta)
+        else:
+            linhas = soup.find_all('li')
+            for linha in linhas:
+                links = linha.find_all('a')
+                if links and links[0].get('href') is not None and links[0].get('title') is not None and links[0].get('href')[0:6]=="/wiki/":
+                    a=links[0]
+                    if "List of bridges" in a['title']:
+                        recuperaPontes('https://en.wikipedia.org'+a['href'],resposta,visited)
+                    else:
+                        temp=[]
+                        temp.append(a['title'])
+                        temp.append(getCoordinates('https://en.wikipedia.org'+a['href']))
+                        resposta.append(temp)
+                        print(temp)
 
 # Extrai as coordenadas de uma pagina, caso não encontre retorna 'sem informacao'
 def getCoordinates(url):
-    response = urllib.request.urlopen(url)
-    soup = BeautifulSoup(response.read())
+    try:
+        response = request.get(url)
+    except:
+        return "url nao encontrada"
+    else:
+        soup = BeautifulSoup(response.read())
 
-    coords = soup.find_all('span')
-    for coord in coords:
-        if coord.get('class') is not None and coord['class'][0] == "geo-dec":
-            return coord.text
-    return "sem informacao"
+        coords = soup.find_all('span')
+        for coord in coords:
+            if coord.get('class') is not None and coord['class'][0] == "geo-dec":
+                return coord.text
+        return "sem informacao"
+
+# INCOMPLETO. NOT IN USE. Encontra a tag h2 see also
+def encontraSeeAlso(soup):
+    tags_h2 = soup.find_all('h2')
+    for tag_h2 in tags_h2:
+        texts = tag_h2.find_all('span')
+        for text in texts:
+            if "See also" in text:
+                return tag_h2
+
+# INCOMPLETO, NOT IN USE. Limpa o soup a partir da tag h2 see also.
+def limpaSoup(soup):
+    if encontraSeeAlso(soup) is not None:
+        soup.find_all_next()
+
+    return soup
 
 #funcao principal
-def recuperaPontes(url,resposta):
-    findLists(url,resposta)
-    findElements(url,resposta)
+def recuperaPontes(url,resposta,visited):
+    if url in visited:
+        pass
+        print("JA VISITADO!!!!!!!!!!!!!!!")
+    else:
+        visited.append(url)
+        print(url)
+        findElements(url,resposta,visited)
 
 correct=[]
-findLists('https://en.wikipedia.org/wiki/List_of_bridges',correct)
+visited=[]
+recuperaPontes('https://en.wikipedia.org/wiki/List_of_bridges',correct,visited)
 print(correct)
+print(visited)
