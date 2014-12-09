@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-import urllib.request
 from bs4 import BeautifulSoup
+import requests
 
 # Extrai o nome e a coordenada da ponte no caso que a informação está contida em uma tabela.
 def extractTabela(soup,resposta):
@@ -53,8 +53,8 @@ def verificaTabela(soup):
 
 # Encontra as listas na URL que não fazem parte do LI
 def findLists(url,resposta,visited):
-    response = urllib.request.urlopen(url)
-    soup = BeautifulSoup(response.read())
+    response = requests.get(url)
+    soup = BeautifulSoup(response.content)
 
     links = soup.find_all('a')
     for link in links:
@@ -66,11 +66,11 @@ def findElements(url,resposta,visited):
     visited.append(url)
 
     try:
-        response = urllib.request.urlopen(url)
+        response = requests.get(url)
     except:
         print("pagina nao encontrada")
     else:
-        soup = BeautifulSoup(response.read())
+        soup = BeautifulSoup(response.content)
 
         findLists(url,resposta,visited)
 
@@ -94,11 +94,11 @@ def findElements(url,resposta,visited):
 # Extrai as coordenadas de uma pagina, caso não encontre retorna 'sem informacao'
 def getCoordinates(url):
     try:
-        response = request.get(url)
+        response = requests.get(url)
     except:
         return "url nao encontrada"
     else:
-        soup = BeautifulSoup(response.read())
+        soup = BeautifulSoup(response.content)
 
         coords = soup.find_all('span')
         for coord in coords:
