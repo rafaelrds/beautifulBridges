@@ -28,6 +28,6 @@ Usage
 
 ::
 
-    python bridge_lista.py
+    python bridge.py
 
 
